@@ -1,0 +1,27 @@
+version: '3'
+services:
+  webhook:
+    build: ./webhook
+    image: webhook-entry-point
+    ports: 
+      - "4848:8080"
+  dispatcher:
+    build: ./dispatcher
+    image: queue-dispatcher
+    ports: 
+      - "3232:3232"
+    depends_on:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    volumes:
+      - ./db-data:/data/db
+    ports:
+      - "27017:27017"
+  redis:
+    image: "redis:alpine"
+    
+volumes:
+  app_node_modules:
