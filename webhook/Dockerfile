@@ -1,13 +1,15 @@
-FROM risingstack/alpine:3.4-v6.9.4-4.2.0
+FROM node:10-alpine
 
-ENV PORT 3001
+WORKDIR /home/troulette/webhook
 
-EXPOSE 3001
+COPY package*.json ./
 
-COPY package.json package.json
 RUN npm install
 
 COPY . .
-RUN npm run build
 
-CMD ["node", "dist/"]
+RUN npm install -g typescript
+
+EXPOSE 8080
+
+CMD npm run dev
