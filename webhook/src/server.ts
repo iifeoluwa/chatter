@@ -8,12 +8,12 @@ import config from './config';
 const server = restify.createServer({
     name    : config.name,
     version : config.version
-})
+});
 
-server.use(restify.plugins.jsonBodyParser())
-server.use(restify.plugins.acceptParser(server.acceptable))
-server.use(restify.plugins.queryParser())
-server.use(restify.plugins.fullResponse())
+server.use(restify.plugins.jsonBodyParser());
+server.use(restify.plugins.acceptParser(server.acceptable));
+server.use(restify.plugins.queryParser());
+server.use(restify.plugins.fullResponse());
 
 server.listen(config.port, () => {
 
@@ -21,7 +21,7 @@ server.listen(config.port, () => {
      * Initiate connection to database
      */
     (<any>mongoose).Promise = config.db.mongo.options.promiseLibrary;
-    mongoose.connect(config.db.mongo.uri, config.db.mongo.options)
+    mongoose.connect(config.db.mongo.uri, config.db.mongo.options);
 
     const db = mongoose.connection
 
