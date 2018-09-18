@@ -10,23 +10,23 @@ const TWIT = new twit({
     access_token_secret:  config.access_token_secret,
 });
 
-export function addWebhook(url: string): Promise<any> {
+export function addWebhook(url: string): Promise<Object> {
     const path = `/account_activity/all/${config.env_name}/webhooks`;
     return TWIT.get(path, {url: url})
-        .then((result: any) => {
+        .then((result: twit.PromiseResponse) => {
             return result.data;
         })
-        .catch((error: any)=> {
+        .catch((error: twit.Twitter.Errors)=> {
             throw error;
         });
 }
 
-export function fetchWebhooks(): Promise<any> {
+export function fetchWebhooks(): Promise<Object> {
     return TWIT.get('account_activity/all/webhooks')
-        .then((result: any) => {
+        .then((result: twit.PromiseResponse) => {
             return result.data;
         })
-        .catch((error: any)=> {
+        .catch((error: twit.Twitter.Errors)=> {
             throw error;
         });
 }

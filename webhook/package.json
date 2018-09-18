@@ -14,13 +14,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/mongoose": "^5.2.11",
-    "@types/node": "^7.0.22",
-    "@types/restify": "^7.2.3",
-    "@types/twit": "^2.2.19",
-    "mongoose": "^5.2.13",
-    "restify": "^7.2.1",
-    "twit": "^2.2.11"
+    "@types/mongoose": "5.2.11",
+    "@types/node": "7.0.22",
+    "@types/restify": "7.2.3",
+    "@types/twit": "2.2.19",
+    "mongoose": "5.2.13",
+    "restify": "7.2.1",
+    "twit": "2.2.11"
   },
   "devDependencies": {
     "eslint": "4.0.0",
