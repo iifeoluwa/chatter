@@ -6,7 +6,7 @@ const config = {
     port: process.env.PORT || '8080',
     db: {
         mongo: {
-            uri: 'mongodb://mongo:27017',
+            uri: process.env.MONGO_URL || 'mongodb://mongo:27017',
             options: {
                 promiseLibrary: Promise,
                 autoReconnect: true,

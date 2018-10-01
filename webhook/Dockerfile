@@ -1,6 +1,6 @@
 FROM node:10-alpine
 
-WORKDIR /home/troulette/webhook
+WORKDIR /home/chatter/webhook
 
 COPY package*.json ./
 
@@ -10,6 +10,4 @@ COPY . .
 
 RUN npm install -g typescript
 
-EXPOSE 8080
-
-CMD npm run dev
+CMD npm start
