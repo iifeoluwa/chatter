@@ -1,6 +1,7 @@
 'use strict';
 
 import * as twit from 'twit';
+import { createHmac } from "crypto";
 import config from '../config/twitter';
 
 const TWIT = new twit({
@@ -11,8 +12,8 @@ const TWIT = new twit({
 });
 
 export function addWebhook(url: string): Promise<Object> {
-    const path = `/account_activity/all/${config.env_name}/webhooks`;
-    return TWIT.get(path, {url: url})
+    const path = `account_activity/all/${config.env_name}/webhooks`;
+    return TWIT.post(path, {url: url})
         .then((result: twit.PromiseResponse) => {
             return result.data;
         })
@@ -29,6 +30,13 @@ export function fetchWebhooks(): Promise<Object> {
         .catch((error: twit.Twitter.Errors)=> {
             throw error;
         });
+}
+
+export function createHash(data: string): String {
+    const hash = createHmac('sha256', config.consumer_secret)
+        .update(data)
+        .digest('base64');
+    return hash;
 }
 
 export default TWIT;

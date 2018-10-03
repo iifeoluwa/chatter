@@ -1,10 +1,10 @@
 'use strict';
 
 import { Request, Response, Next } from "restify";
-import {Twitter, } from 'twit';
+import { Twitter } from 'twit';
 import { addWebhook, fetchWebhooks } from '../lib/twitter';
 
-class WebhooksController {
+export class WebhooksController {
 
     constructor() {}
 
@@ -14,20 +14,20 @@ class WebhooksController {
             return next();
         })
         .catch((error: Twitter.Errors) => {
-            res.send(400, {status: 'error', message: error.errors})
+            console.log(error)
+            res.send(400, {status: 'error', message: error.errors[0]})
         })
     }
 
     add(req: Request, res: Response, next: Next) {
-        addWebhook(req.params.url).then((data: any) => {
+        addWebhook(req.query.url).then((data: any) => {
             res.send(200, {status: 'success', data: data});
             return next();
         })
         .catch((error: Twitter.Errors) => {
-            res.send(400, {status: 'error', message: error.errors})
+            console.log(error)
+            res.send(400, {status: 'error', message: error.errors[0]})
         })
     }
     
 }
-
-export default WebhooksController;
