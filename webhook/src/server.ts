@@ -1,19 +1,16 @@
 'use strict';
 
+import { plugins, createServer } from 'restify';
 import * as mongoose from 'mongoose';
-import * as restify from 'restify';
 import * as router from './routes'
 import config from './config';
 
-const server = restify.createServer({
+const server = createServer({
     name    : config.name,
     version : config.version
 });
 
-server.use(restify.plugins.bodyParser());
-server.use(restify.plugins.acceptParser(server.acceptable));
-server.use(restify.plugins.queryParser());
-server.use(restify.plugins.fullResponse());
+server.use(plugins.acceptParser(server.acceptable));
 
 server.listen(config.port, () => {
 

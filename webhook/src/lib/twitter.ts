@@ -32,7 +32,7 @@ export function fetchWebhooks(): Promise<Object> {
         });
 }
 
-export function createHash(data: string): String {
+export function createHash(data: string): string {
     const hash = createHmac('sha256', config.consumer_secret)
         .update(data)
         .digest('base64');
