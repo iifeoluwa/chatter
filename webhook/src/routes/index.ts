@@ -16,4 +16,5 @@ export function register (server: Server) {
     server.get('/webhooks', Webhooks.fetchAll);
     server.get('/events/twitter', Events.verifyCRCToken);
     server.post('/events/twitter', [rawBody, validateRequest]);
+    server.post('/subscriptions/twitter', Webhooks.subscribe);
 }

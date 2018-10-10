@@ -39,4 +39,14 @@ export function createHash(data: string): string {
     return hash;
 }
 
+export function addSubscription(){
+    return TWIT.post(`account_activity/all/${config.env_name}/subscriptions`)
+    .then((result: twit.PromiseResponse) => {
+        return result.data;
+    })
+    .catch((error: twit.Twitter.Errors)=> {
+        throw error;
+    });
+}
+
 export default TWIT;
