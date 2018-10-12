@@ -43,10 +43,21 @@ export function createHash(data: string): string {
 
 export function addSubscription(){
     return hit(`account_activity/all/${config.env_name}/subscriptions`, {method: 'POST'})
-    .then((result: Response<object>) => {
-        return result.body;
-    })
-    .catch((error: GotError)=> {
-        throw error;
-    });
+        .then((result: Response<object>) => {
+            return result.body;
+        })
+        .catch((error: GotError)=> {
+            throw error;
+        });
+}
+
+export function triggerCheck(webhookId: string) {
+    const path = `account_activity/all/${config.env_name}/webhooks/${webhookId}`
+    return hit(path, {method: 'PUT'})
+        .then((result: Response<object>) => {
+            return result.body;
+        })
+        .catch((error: GotError)=> {
+            throw error;
+        });
 }
