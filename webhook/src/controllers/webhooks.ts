@@ -1,7 +1,6 @@
 'use strict';
 
 import { Request, Response, Next } from "restify";
-import { Twitter } from 'twit';
 import { addSubscription, addWebhook, fetchWebhooks } from '../lib/twitter';
 
 export class WebhooksController {

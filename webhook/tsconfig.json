@@ -5,12 +5,12 @@
     "outDir": "dist",
     "sourceMap": true,
     "noImplicitAny": true,
-    "types" : ["node", "twit", "restify"]
+    "types" : ["node", "restify", "got"]
   },
   "files": [
     "./node_modules/@types/mocha/index.d.ts",
     "./node_modules/@types/node/index.d.ts",
-    "./node_modules/@types/twit/index.d.ts"
+    "./node_modules/@types/got/index.d.ts"
   ],
   "include": [
     "src/**/*.ts"

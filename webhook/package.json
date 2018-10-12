@@ -14,16 +14,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "got": "^8.3.2",
     "mongoose": "5.2.13",
-    "restify": "7.2.1",
-    "twit": "2.2.11"
+    "oauth-1.0a": "^2.2.4",
+    "restify": "7.2.1"
   },
   "devDependencies": {
+    "@types/node": "^8.10.36",
+    "@types/got": "^8.3.4",
     "@types/mocha": "^5.2.5",
     "@types/mongoose": "5.2.11",
-    "@types/node": "7.0.22",
     "@types/restify": "7.2.3",
-    "@types/twit": "2.2.19",
     "eslint": "4.0.0",
     "eslint-config-airbnb-base": "11.2.0",
     "eslint-plugin-import": "2.3.0",
