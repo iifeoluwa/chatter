@@ -9,7 +9,7 @@ import config from '../config/twitter';
 export function addWebhook(url: string): Promise<Object> {
     const path = `account_activity/all/${config.env_name}/webhooks`;
     const options: RequestOptions = {
-        method: 'GET',
+        method: 'POST',
         queryParams: {
             url: url
         }
@@ -58,6 +58,7 @@ export function triggerCheck(webhookId: string) {
             return result.body;
         })
         .catch((error: GotError)=> {
+            console.log({error})
             throw error;
         });
 }
