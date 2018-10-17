@@ -12,7 +12,20 @@ export function validateRequest (req: Request, res: Response, next: Next) {
         const signatureHash = signature.substring(signature.indexOf('=') + 1);
         
         if (timingSafeEqual(Buffer.from(hash), Buffer.from(signatureHash))) {
-            return next();
+            try {
+                req.body = JSON.parse(req.body);
+            } catch (error) {
+                throw error;
+            }
+
+            // We want to process only direct message events for now. Ignore all other event types
+            if(req.body.hasOwnProperty('direct_message_events')){
+                return next();
+            } else {
+                res.json(200, {});
+                return next(false);
+            }
+            
         }
 
         res.json(401, {status: 'errror', message: 'validation failed'});
