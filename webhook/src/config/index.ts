@@ -13,6 +13,7 @@ const config = {
                 reconnectTries: 10,
                 reconnectInterval: 2000,
                 autoIndex: true,
+                useNewUrlParser: true,
             }
         }
     }

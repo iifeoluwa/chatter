@@ -5,6 +5,29 @@ import { Response, GotError } from 'got';
 import { createHmac } from "crypto";
 import config from '../config/twitter';
 
+interface MessageCreate {
+    target: {
+        recipient_id: string;
+    },
+    sender_id: string;
+    source_app_id?: string;
+    message_data: {
+        text: string;
+        entities?: {
+            hashtags?: [],
+            symbols?: [],
+            user_mentions?: [],
+            urls?: []
+        }
+    }
+};
+
+interface DirectMessageEvent {
+    type: string;
+    id: string;
+    created_timestamp: string;
+    message_create: MessageCreate;
+};
 
 export function addWebhook(url: string): Promise<Object> {
     const path = `account_activity/all/${config.env_name}/webhooks`;
@@ -61,4 +84,8 @@ export function triggerCheck(webhookId: string) {
             console.log({error})
             throw error;
         });
+}
+
+export function fetchMessageData(event: ) {
+
 }
