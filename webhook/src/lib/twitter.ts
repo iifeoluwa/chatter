@@ -29,6 +29,11 @@ interface DirectMessageEvent {
     message_create: MessageCreate;
 };
 
+export interface IncomingMessageData {
+    senderId: string;
+    message: string;
+};
+
 export function addWebhook(url: string): Promise<Object> {
     const path = `account_activity/all/${config.env_name}/webhooks`;
     const options: RequestOptions = {
@@ -86,6 +91,39 @@ export function triggerCheck(webhookId: string) {
         });
 }
 
-export function fetchMessageData(event: ) {
+export function fetchMessageData(event: DirectMessageEvent[]): IncomingMessageData {
+    return {
+        senderId: event[0].message_create.sender_id,
+        message: event[0].message_create.message_data.text
+    }
+}
 
+export function sendMessage(message: string, recipient: string) {
+    const messageEvent = buildMessageBody(message, recipient);
+    const path = 'direct_messages/events/new';
+
+    return hit(path, {method: 'POST', body: messageEvent})
+        .then((result: Response<object>) => {
+            return result.body;
+        })
+        .catch((error: GotError)=> {
+            console.log({error})
+            throw error;
+        });
+}
+
+function buildMessageBody(message: string, recipient: string) {
+    return {
+        event: {
+            type: 'message_create',
+            message_create: {
+                target: {
+                    recipient_id: recipient
+                },
+                message_data: {
+                    text: message
+                }
+            }
+        }
+    };
 }
