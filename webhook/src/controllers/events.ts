@@ -1,7 +1,7 @@
 'use strict';
 
 import { Request, Response, Next } from "restify";
-import { createHash, IncomingMessageData, fetchMessageData, sendMessage } from "../lib/twitter"
+import { createHash, IncomingMessageData, fetchMessageData } from "../lib/twitter"
 import { queueInvalidCommand } from "../lib/queue"
 import config from "../config/twitter"
 
@@ -25,12 +25,7 @@ export class EventsController {
             if (message.toLowerCase() === 'online') {
 
             } else {
-                try {
-                    queueInvalidCommand()
-                } catch (error) {
-                    console.log('Error occurred while sending message to user', error.message);
-                }          
-
+                    queueInvalidCommand({user: senderId});
             }
         }
 

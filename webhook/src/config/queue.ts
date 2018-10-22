@@ -7,16 +7,9 @@ export default {
         connect_timeout: 3600000,
     },
     log: {
-        enabled: 0,
+        enabled: 1,
         options: {
             level: 'trace',
-            /*
-            streams: [
-                {
-                    path: path.normalize(`${__dirname}/../logs/redis-smq.log`)
-                },
-            ],
-            */
         },
     }
 }

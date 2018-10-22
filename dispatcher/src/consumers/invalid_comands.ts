@@ -1,5 +1,6 @@
 const { Consumer } = require('redis-smq');
-import { RedisConfig, QueueNames } from "../config"
+import { sendInvalidCommandMessage } from "../lib/twitter"
+import { QueueNames } from "../config"
 
 interface InvalidCommandMessage {
     user: string;
@@ -11,9 +12,12 @@ class InvalidCommandsConsumer extends Consumer {
      * @param message
      * @param cb
      */
-    consume(message: InvalidCommandMessage, callback: any) {
-        // sendInvalidCommandMessageToUser()
-        callback();
+    consume(data: InvalidCommandMessage, callback: any) {
+        sendInvalidCommandMessage(data.user)
+            .then(() => callback())
+            .catch(err => {
+                callback(err.message);
+            });
     }
 }
 
