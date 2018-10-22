@@ -97,33 +97,3 @@ export function fetchMessageData(event: DirectMessageEvent[]): IncomingMessageDa
         message: event[0].message_create.message_data.text
     }
 }
-
-export function sendMessage(message: string, recipient: string) {
-    const messageEvent = buildMessageBody(message, recipient);
-    const path = 'direct_messages/events/new';
-
-    return hit(path, {method: 'POST', body: messageEvent})
-        .then((result: Response<object>) => {
-            return result.body;
-        })
-        .catch((error: GotError)=> {
-            console.log({error})
-            throw error;
-        });
-}
-
-function buildMessageBody(message: string, recipient: string) {
-    return {
-        event: {
-            type: 'message_create',
-            message_create: {
-                target: {
-                    recipient_id: recipient
-                },
-                message_data: {
-                    text: message
-                }
-            }
-        }
-    };
-}
