@@ -4,6 +4,7 @@ import * as config from '../config/queue';
 interface InvalidCommand {
     user: string;
 }
+
 const invalidCommandProducer = new Producer('invalid-commands', config);
 
 export function queueInvalidCommand(data: InvalidCommand) {

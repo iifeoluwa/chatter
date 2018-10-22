@@ -22,9 +22,9 @@
     "restify": "7.2.1"
   },
   "devDependencies": {
-    "@types/node": "^8.10.36",
-    "@types/got": "^8.3.4",
-    "@types/mocha": "^5.2.5",
+    "@types/node": "8.10.36",
+    "@types/got": "8.3.4",
+    "@types/mocha": "5.2.5",
     "@types/mongoose": "5.2.11",
     "@types/restify": "7.2.3",
     "eslint": "4.0.0",
