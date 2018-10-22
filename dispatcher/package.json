@@ -14,9 +14,15 @@
   "author": "Ifeoluwa Arowosegbe",
   "license": "ISC",
   "dependencies": {
+    "got": "8.3.2",
+    "oauth-1.0a": "2.2.4",
+    "redis": "2.8.0",
+    "redis-smq": "1.0.21"
+  },
+  "devDependencies": {
+    "@types/got": "8.3.4",
     "@types/mocha": "5.2.5",
     "@types/node": "8.10.36",
-    "redis": "^2.8.0",
-    "redis-smq": "^1.0.21"
+    "typescript": "3.1.3"
   }
 }
