@@ -1,4 +1,4 @@
-import * as got from 'got';
+import got from 'got';
 import { createHmac } from 'crypto';
 const OAuth = require('oauth-1.0a');
 
