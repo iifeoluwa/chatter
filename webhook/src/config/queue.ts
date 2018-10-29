@@ -1,9 +1,14 @@
-'use strict';
+import { parse } from "url";
 
-export default {
+const {hostname, auth, port} = parse(process.env.REDISCLOUD_URL);
+
+const config =  {
     namespace: 'chatter',
     redis: {
+        host: hostname,
+        port: port,
         url: process.env.REDISCLOUD_URL,
+        password: auth.split(':')[1],
         connect_timeout: 3600000,
     },
     log: {
@@ -12,4 +17,6 @@ export default {
             level: 'trace',
         },
     }
-}
+};
+
+export default config;

@@ -1,5 +1,3 @@
-'use strict'
-
 const config = {
     name: 'troulette',
     version: '1.0.0',

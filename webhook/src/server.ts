@@ -1,5 +1,3 @@
-'use strict';
-
 import { plugins, createServer } from 'restify';
 import * as mongoose from 'mongoose';
 import * as router from './routes'
