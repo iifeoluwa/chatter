@@ -8,18 +8,19 @@
     "dev": "tsc --watch & nodemon dist/server.js",
     "test": "tsc && mocha dist/**/*.spec.js",
     "lint": "eslint src --ext ts",
-    "start": "node dist/server.js"
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "Ifeoluwa Arowosegbe",
   "license": "ISC",
   "dependencies": {
+    "bull": "3.4.8",
     "got": "8.3.2",
-    "oauth-1.0a": "2.2.4",
-    "redis": "2.8.0",
-    "redis-smq": "1.0.21"
+    "ioredis": "4.2.0",
+    "oauth-1.0a": "2.2.4"
   },
   "devDependencies": {
+    "@types/bull": "3.4.0",
     "@types/got": "8.3.4",
     "@types/mocha": "5.2.5",
     "@types/node": "8.10.36",
