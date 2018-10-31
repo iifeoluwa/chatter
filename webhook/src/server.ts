@@ -1,5 +1,5 @@
 import { plugins, createServer } from 'restify';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import * as router from './routes'
 import config from './config';
 

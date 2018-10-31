@@ -2,7 +2,7 @@ import { parse } from "url";
 
 const {hostname, auth, port} = parse(process.env.REDISCLOUD_URL);
 
-const config =  {
+export const config =  {
     namespace: 'chatter',
     redis: {
         host: hostname,
@@ -19,4 +19,6 @@ const config =  {
     }
 };
 
-export default config;
+export const QueueNames = {
+    invalidCommands: process.env.INVALID_COMMAND_QUEUE_NAME || 'invalid_commands'
+}

@@ -1,18 +1,20 @@
-const { Message, Producer } = require('redis-smq');
-import * as config from '../config/queue';
+import Queue from "bull";
+import { config, QueueNames } from '../config/queue';
 
 interface InvalidCommand {
     user: string;
 }
 
-const invalidCommandProducer = new Producer('invalid-commands', config);
+const invalidCommandQueue = new Queue(QueueNames.invalidCommands, config.redis.url);
 
-export function queueInvalidCommand(data: InvalidCommand) {
-    const message = new Message();
-    message.setBody(data);
-    invalidCommandProducer.produceMessage(message, (err: any) => {
-        if (err) console.log(err);
-        else console.log(`Successfully sent invalid command message to user ${data.user}.`);
-    });
-    invalidCommandProducer.shutdown();
+export async function queueInvalidCommand(data: InvalidCommand) {
+
+    try {
+        const job = await invalidCommandQueue.add({
+            user: data.user
+        });
+        console.log(`Successfully sent invalid command message to user ${data.user}.`);
+    } catch (error) {
+        console.log('Error occurred while adding job to queue', error);
+    }
 }

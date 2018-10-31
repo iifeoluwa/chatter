@@ -14,18 +14,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bull": "3.4.8",
     "got": "8.3.2",
+    "ioredis": "4.2.0",
     "mongoose": "5.2.13",
     "oauth-1.0a": "2.2.4",
-    "redis": "2.8.0",
-    "redis-smq": "1.0.21",
     "restify": "7.2.1"
   },
   "devDependencies": {
-    "@types/node": "8.10.36",
+    "@types/bull": "3.4.0",
     "@types/got": "8.3.4",
     "@types/mocha": "5.2.5",
     "@types/mongoose": "5.2.11",
+    "@types/node": "8.10.36",
     "@types/restify": "7.2.3",
     "eslint": "4.0.0",
     "eslint-config-airbnb-base": "11.2.0",

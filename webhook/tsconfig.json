@@ -6,12 +6,14 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "alwaysStrict": true,
-    "types" : ["node", "restify", "got"]
+    "esModuleInterop": true,
+    "types" : ["node", "restify", "got", "bull"]
   },
   "files": [
     "./node_modules/@types/mocha/index.d.ts",
     "./node_modules/@types/node/index.d.ts",
-    "./node_modules/@types/got/index.d.ts"
+    "./node_modules/@types/got/index.d.ts",
+    "./node_modules/@types/bull/index.d.ts",
   ],
   "include": [
     "src/**/*.ts"
