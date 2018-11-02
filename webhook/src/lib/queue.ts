@@ -7,6 +7,11 @@ interface InvalidCommand {
 
 const invalidCommandQueue = new Queue(QueueNames.invalidCommands, config.redis.url);
 
+
+/**
+ * Adds a new invalid command message to be sent to user to queue.
+ * @param data 
+ */
 export async function queueInvalidCommand(data: InvalidCommand) {
 
     try {
