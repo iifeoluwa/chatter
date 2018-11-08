@@ -1,8 +1,9 @@
 'use strict';
 
 import { Request, Response, Next } from "restify";
-import { createHash, IncomingMessageData, fetchMessageData } from "../lib/twitter"
-import { queueInvalidCommand } from "../lib/queue"
+import { createHash, IncomingMessageData, fetchMessageData } from "../lib/twitter";
+import { queueInvalidCommand, putUserOnline } from "../lib/queue";
+import { isOnline } from "../lib/redis";
 import config from "../config/twitter"
 
 export class EventsController {
@@ -22,11 +23,18 @@ export class EventsController {
 
         // Don't proccess messages that are sent from us for now. Might handle them in the future.
         if (senderId !== config.account_id) {
-            if (message.toLowerCase() === 'online') {
+            // When user is online, route all messages to person they're connected to
+            // When not online, treat every message as a command and attemt to handle accordingly
+            isOnline(senderId).then(user => {
 
-            } else {
-                    queueInvalidCommand({user: senderId});
-            }
+            })
+            .catch(error => {
+                if (message.toLowerCase() !== 'online') {
+                    queueInvalidCommand(senderId);
+                } else {
+                    putUserOnline(senderId);
+                }
+            })
         }
 
         res.json(200, {})
