@@ -2,7 +2,7 @@
 
 import { Request, Response, Next } from "restify";
 import { createHash, IncomingMessageData, fetchMessageData } from "../lib/twitter";
-import { queueInvalidCommand, putUserOnline } from "../lib/queue";
+import { queueInvalidCommand, putUserOnline, sendMessageToRecipient } from "../lib/queue";
 import { isOnline } from "../lib/redis";
 import config from "../config/twitter"
 
@@ -26,7 +26,7 @@ export class EventsController {
             // When user is online, route all messages to person they're connected to
             // When not online, treat every message as a command and attemt to handle accordingly
             isOnline(senderId).then(user => {
-
+                sendMessageToRecipient(message, senderId)
             })
             .catch(error => {
                 if (message.toLowerCase() !== 'online') {

@@ -4,6 +4,7 @@ import { config, QueueNames } from '../config/queue';
 
 const invalidCommandQueue = createQueue(QueueNames.invalidCommands);
 const onlineUsersQueue = createQueue(QueueNames.online);
+const commsQueue = createQueue(QueueNames.messaging)
 
 
 /**
@@ -26,6 +27,12 @@ export async function putUserOnline(sender: string) {
     onlineUsersQueue.add({user: sender})
         .then(result => console.log(result))
         .catch(error => console.log('Error occurred while adding job to online users queue', error.message));
+}
+
+export function sendMessageToRecipient(message: string, sender: string) {
+    onlineUsersQueue.add({user: sender, message: message})
+        .then(result => console.log(result))
+        .catch(error => console.log('Error occurred while adding job to messaging queue', error.message));
 }
 
 /**
