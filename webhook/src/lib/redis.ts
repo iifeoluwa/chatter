@@ -1,5 +1,6 @@
 import Redis from "ioredis";
 import { config } from '../config/queue';
+import { Keys } from '../config/queue'
 
 const redis = new Redis(config.redis.url);
 
@@ -8,10 +9,19 @@ const redis = new Redis(config.redis.url);
  * @param userId 
  */
 export function isOnline(userId: string) {
-    return redis.get(userId).then(user => {
-        return true;
-    })
-    .catch(error => {
-        throw error;
-    })
+    return redis.hexists(Keys.online, transformToKey(userId))
+        .then(keyExists => {
+            if(keyExists) {
+                return true;
+            }
+
+            throw new Error('User not online.');
+        })
+        .catch(error => {
+            throw error;
+        })
+}
+
+function transformToKey(user: string) {
+    return `user-${user}`;
 }
