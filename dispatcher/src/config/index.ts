@@ -20,8 +20,11 @@ export const RedisConfig =  {
 };
 
 export const QueueNames = {
-    invalidCommands: process.env.INVALID_COMMAND_QUEUE_NAME || 'invalid_commands'
+    invalidCommands: process.env.INVALID_COMMAND_QUEUE_NAME || 'invalid_commands',
+    online: process.env.ONLINE_USERS_QUEUE_NAME || 'users_online',
+    messaging: process.env.ACTIVE_USERS_QUEUE_NAME || 'messaging'
 }
+
 
 export const Keys = {
     waitlist: 'waitlist',

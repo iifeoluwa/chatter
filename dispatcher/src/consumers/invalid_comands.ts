@@ -1,5 +1,5 @@
 import { sendMessage, buildMessageBody } from "../lib/twitter"
-import { Messages } from '../config/twitter'
+import { Messages } from '../config/messages'
 
 interface InvalidConsumer {
     id: string;
