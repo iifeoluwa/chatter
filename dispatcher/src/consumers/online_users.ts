@@ -2,21 +2,19 @@ import Redis from "ioredis";
 import { Messages } from "../config/messages";
 import { RedisConfig, Keys } from "../config/index";
 import { buildMessageBody, sendMessage } from "../lib/twitter"
+import { transformKeyToID, transformToKey } from "../util/redis"
 
 const redis = new Redis(RedisConfig.redis.url);
 
 interface Users {
     id: string;
     data: {
-        message: string;
         user: string
     }
     progress ?: Function;
 }
 
 export default function(job: Users): Promise<any> {
-    const messageEvent = buildMessageBody(job.data.message, job.data.user);
-
     return redis.scard(Keys.waitlist)
         .then((waitlistLength) => {
             if(waitlistLength === 0) {
@@ -27,10 +25,6 @@ export default function(job: Users): Promise<any> {
         })
         .then(() => {})
         .catch(error => Promise.reject(error));
-}
-
-function transformToKey(user: string) {
-    return `user-${user}`;
 }
 
 function addUserToWaitlist(user: string) {
@@ -75,8 +69,4 @@ function putUserOnline(user: string) {
         .then(() => console.log(`Successfully connnected ${userToPutOnline} and ${waitlistedUser}`))
         .catch((error: any) => Promise.reject(error))
 
-}
-
-function transformKeyToID(user: string) {
-    return user.substring(user.indexOf('-') + 1);
 }

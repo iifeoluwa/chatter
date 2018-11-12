@@ -30,7 +30,7 @@ export async function putUserOnline(sender: string) {
 }
 
 export function sendMessageToRecipient(message: string, sender: string) {
-    onlineUsersQueue.add({user: sender, message: message})
+    onlineUsersQueue.add({sender: sender, message: message})
         .then(result => console.log(result))
         .catch(error => console.log('Error occurred while adding job to messaging queue', error.message));
 }
