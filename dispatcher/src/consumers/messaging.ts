@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { transformKeyToID } from "../util/redis";
+import { transformKeyToID, transformToKey } from "../util/redis";
 import { RedisConfig, Keys } from "../config/index";
 import { buildMessageBody, sendMessage } from "../lib/twitter"
 
@@ -16,11 +16,12 @@ interface Messaging {
 
 export default function(job: Messaging) {
     // Fetch user that sender is connected to
-    redis.hget(Keys.online, job.data.sender)
+    redis.hget(Keys.online, transformToKey(job.data.sender))
         .then(chatMateId => {
-            const messageToSend = buildMessageBody(job.data.message, transformKeyToID(chatMateId));
-
-            return sendMessage(messageToSend);
+            if (chatMateId) {
+                const messageToSend = buildMessageBody(job.data.message, transformKeyToID(chatMateId));
+                return sendMessage(messageToSend);
+            }
         })
         .then(() => {})
         .catch(error => Promise.reject(error));
