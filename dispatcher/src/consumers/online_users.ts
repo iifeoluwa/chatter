@@ -6,7 +6,7 @@ import { transformKeyToID, transformToKey } from "../util/redis"
 
 const redis = new Redis(RedisConfig.redis.url);
 
-interface Users {
+export interface Users {
     id: string;
     data: {
         user: string
@@ -23,8 +23,12 @@ export default function(job: Users): Promise<any> {
                 return putUserOnline(job.data.user);
             }
         })
-        .then(() => {})
-        .catch(error => Promise.reject(error));
+        .then(() => {
+            return Promise.resolve();
+        })
+        .catch(error => {
+            return Promise.reject(error)
+        });
 }
 
 function addUserToWaitlist(user: string) {
@@ -33,8 +37,13 @@ function addUserToWaitlist(user: string) {
             const messageEvent = buildMessageBody(Messages.ADDED_TO_WAITLIST, user);
             return sendMessage(messageEvent)
         })
-        .then(() => console.log(`Successfully waitlisted user-${user}`))
-        .catch((error: any) => Promise.reject(error))
+        .then(() => {
+            console.log(`Successfully waitlisted user-${user}`);
+            return Promise.resolve();
+        })
+        .catch((error: any) => {
+            return Promise.reject(error)
+        })
 }
 
 function putUserOnline(user: string) {
@@ -45,21 +54,21 @@ function putUserOnline(user: string) {
 
     return redis.spop(Keys.waitlist)
         .then((randomWaitlistedUser: string) => {
-            const matchedUsersMap = {
-                userToPutOnline: randomWaitlistedUser,
-                randomWaitlistedUser: userToPutOnline
-            };
+            const matchedUsersMap: any = {};
+
+            matchedUsersMap[`${userToPutOnline}`] = randomWaitlistedUser;
+            matchedUsersMap[`${randomWaitlistedUser}`] = userToPutOnline;
 
             waitlistedUser = randomWaitlistedUser;
             return redis.hmset(Keys.online, matchedUsersMap);
         })
         .then(() => {
             // Send message to both users that they've been connected.
-            const newUserMessage = Messages.CONNECTED.replace('${user}', waitlistedUser);
-            const waitlistedUserMessage = Messages.CONNECTED.replace('${user}', userToPutOnline);
+            const newUserMessage = Messages.CONNECTED.replace('${username}', waitlistedUser);
+            const waitlistedUserMessage = Messages.CONNECTED.replace('${username}', userToPutOnline);
 
             const messageToSendWaitlistedUser = buildMessageBody(waitlistedUserMessage, transformKeyToID(waitlistedUser));
-            const messageToSendNewUser = buildMessageBody(waitlistedUserMessage, user);
+            const messageToSendNewUser = buildMessageBody(newUserMessage, user);
 
             const sendConnectionNotificationToWaitlistedUser = sendMessage(messageToSendWaitlistedUser);
             const sendConnectionNotificationToNewUser = sendMessage(messageToSendNewUser);

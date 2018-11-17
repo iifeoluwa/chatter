@@ -4,7 +4,8 @@ import { config, QueueNames } from '../config/queue';
 
 const invalidCommandQueue = createQueue(QueueNames.invalidCommands);
 const onlineUsersQueue = createQueue(QueueNames.online);
-const commsQueue = createQueue(QueueNames.messaging)
+const commsQueue = createQueue(QueueNames.messaging);
+const offlineUsersQueue = createQueue(QueueNames.offline);
 
 
 /**
@@ -23,16 +24,22 @@ export async function queueInvalidCommand(sender: string) {
     }
 }
 
-export async function putUserOnline(sender: string) {
-    onlineUsersQueue.add({user: sender})
-        .then(result => console.log(result))
+export function putUserOnline(user: string) {
+    onlineUsersQueue.add({user: user})
+        .then(result =>  console.log(`Successfully put user ${user} online.`))
         .catch(error => console.log('Error occurred while adding job to online users queue', error.message));
 }
 
 export function sendMessageToRecipient(message: string, sender: string) {
-    onlineUsersQueue.add({sender: sender, message: message})
-        .then(result => console.log(result))
+    commsQueue.add({sender: sender, message: message})
+        .then(result =>  console.log(`Delivering user ${sender}'s message.`))
         .catch(error => console.log('Error occurred while adding job to messaging queue', error.message));
+}
+
+export function takeUserOffline(user: string) {
+    offlineUsersQueue.add({user: user})
+        .then(result =>  console.log(`Successfully scheduled user ${user} to be put offline.`))
+        .catch(error => console.log('Error occurred while adding job to online users queue', error.message));
 }
 
 /**
@@ -53,7 +60,7 @@ function createQueue(name: string) {
             case 'subscriber':
                 return subscriber;
             default:
-                return new Redis();
+                return new Redis(config.redis.url);
             }
         }
     };
