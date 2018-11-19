@@ -17,12 +17,14 @@
     "bull": "3.4.8",
     "got": "8.3.2",
     "ioredis": "4.2.0",
+    "mongoose": "5.3.12",
     "oauth-1.0a": "2.2.4"
   },
   "devDependencies": {
     "@types/bull": "3.4.0",
     "@types/got": "8.3.4",
     "@types/mocha": "5.2.5",
+    "@types/mongoose": "5.3.1",
     "@types/node": "8.10.36",
     "typescript": "3.1.3"
   }

@@ -1,6 +1,7 @@
 import Queue from "bull";
 import Redis from "ioredis";
-import { RedisConfig, QueueNames } from "./config";
+import { RedisConfig, QueueNames, Mongo } from "./config";
+import mongoose from "mongoose";
 
 const INVALID_COMMANDS_PROCESSOR = `${__dirname}/consumers/invalid_comands.js`;
 const OFFLINE_USERS_PROCESSOR = `${__dirname}/consumers/offline_users.js`;
@@ -39,9 +40,32 @@ const onlineUsersConsumer = createQueue(QueueNames.online);
 const messagesConsumer = createQueue(QueueNames.messaging);
 const offlineConsumer = createQueue(QueueNames.offline);
 
-console.log('Starting Consumers');
-invalidCommandsConsumer.process(INVALID_COMMANDS_PROCESSOR);
-onlineUsersConsumer.process(ONLINE_USERS_PROCESSOR);
-messagesConsumer.process(MESSAGES_PROCESSOR);
-offlineConsumer.process(OFFLINE_USERS_PROCESSOR);
-console.log('Consumers started.')
+/**
+ * Initiate connection to database
+ */
+(<any>mongoose).Promise = Mongo.options.promiseLibrary;
+mongoose.connect(Mongo.uri, Mongo.options);
+
+const db = mongoose.connection
+
+db.on('error', (err: any) => {
+    if (err.message.code === 'ETIMEDOUT' || err.name === 'MongoNetworkError') {
+        console.log('A network error occurred while connecting to db. Retrying...')
+        mongoose.connect(Mongo.uri, Mongo.options)
+    }
+
+    console.log(err)
+})
+
+db.once('open', () => {
+
+    /**
+     * Start consumers
+     */
+    console.log('Starting Consumers');
+    invalidCommandsConsumer.process(INVALID_COMMANDS_PROCESSOR);
+    onlineUsersConsumer.process(ONLINE_USERS_PROCESSOR);
+    messagesConsumer.process(MESSAGES_PROCESSOR);
+    offlineConsumer.process(OFFLINE_USERS_PROCESSOR);
+
+});
