@@ -1,5 +1,4 @@
 import { plugins, createServer } from 'restify';
-import mongoose from 'mongoose';
 import * as router from './routes'
 import config from './config';
 
@@ -11,33 +10,9 @@ const server = createServer({
 server.use(plugins.acceptParser(server.acceptable));
 
 server.listen(config.port, () => {
-
     /**
-     * Initiate connection to database
+     * Register routes for requests handling
      */
-    (<any>mongoose).Promise = config.db.mongo.options.promiseLibrary;
-    mongoose.connect(config.db.mongo.uri, config.db.mongo.options);
-
-    const db = mongoose.connection
-
-    db.on('error', (err: any) => {
-        if (err.message.code === 'ETIMEDOUT' || err.name === 'MongoNetworkError') {
-            console.log('An error occurred while connecting. Retrying...')
-            mongoose.connect(config.db.mongo.uri, config.db.mongo.options)
-        }
-
-        console.log(err)
-    })
-
-    db.once('open', () => {
-
-        /**
-         * Register routes for requests handling
-         */
-        router.register(server)
-
-        console.log(`Server is listening on port ${config.port}`)
-
-    })
-
-})
+    router.register(server)
+    console.log(`Server is listening on port ${config.port}`)
+});
