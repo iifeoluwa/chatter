@@ -1,7 +1,16 @@
-import mongoose from "mongoose";
+import { Schema, Model, model } from "mongoose";
+import { UserDocument } from "../interfaces/user";
 
-const UserSchema = new mongoose.Schema({
-    id: { 
+export interface IUser extends UserDocument {
+
+}
+
+export interface UserModel extends Model<IUser> {
+    fetchUser(id: string): Promise<IUser|null>;
+}
+
+const UserSchema: Schema = new Schema({
+    userId: { 
         type: String, 
         index: true, 
         required: true,
@@ -17,6 +26,10 @@ const UserSchema = new mongoose.Schema({
         type: Date, 
         default: Date.now 
     },
-})
+});
 
-export default mongoose.model('User', UserSchema);
+UserSchema.statics.fetchUser = function(id: string) {
+    return this.findOne({id: id});
+}
+
+export const User: UserModel = model<IUser, UserModel>('User', UserSchema);
