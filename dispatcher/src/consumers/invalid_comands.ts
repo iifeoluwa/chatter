@@ -1,4 +1,4 @@
-import { sendMessage, buildMessageBody } from "../lib/twitter"
+import { sendMessage, buildMessageBody } from "../util/twitter"
 import { Messages } from '../config/messages'
 
 interface InvalidConsumer {

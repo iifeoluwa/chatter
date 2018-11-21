@@ -1,7 +1,7 @@
 import Redis from "ioredis";
 import { transformKeyToID, transformToKey } from "../util/redis";
 import { RedisConfig, Keys } from "../config/index";
-import { buildMessageBody, sendMessage } from "../lib/twitter"
+import { buildMessageBody, sendMessage } from "../util/twitter"
 
 const redis = new Redis(RedisConfig.redis.url);
 

@@ -32,5 +32,6 @@ export const QueueNames = {
 
 export const Keys = {
     waitlist: 'waitlist',
-    online: 'online_users'
+    online: 'online_users',
+    moniker: 'monikers'
 }

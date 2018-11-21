@@ -3,12 +3,12 @@ import { Users } from "./online_users";
 import { Messages } from "../config/messages";
 import { transformToKey, transformKeyToID } from "../util/redis";
 import { RedisConfig, Keys } from "../config/index";
-import { buildMessageBody, sendMessage} from "../lib/twitter";
+import { buildMessageBody, sendMessage} from "../util/twitter";
 
 const redis = new Redis(RedisConfig.redis.url);
 
 export default function(job: Users) {
-    const user = transformToKey(job.data.user);
+    const user: string = transformToKey(job.data.user);
     
     return redis.hget(Keys.online, user)
         .then(async (chatMate) => {
