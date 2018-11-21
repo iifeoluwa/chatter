@@ -1,8 +1,9 @@
 import Redis from "ioredis";
+import { User, IUser } from "../models/user";
 import { Messages } from "../config/messages";
 import { RedisConfig, Keys } from "../config/index";
-import { buildMessageBody, sendMessage } from "../lib/twitter"
-import { transformKeyToID, transformToKey } from "../util/redis"
+import { buildMessageBody, sendMessage } from "../util/twitter"
+import { transformKeyToID, transformToKey, generateMoniker } from "../util/redis"
 
 const redis = new Redis(RedisConfig.redis.url);
 
@@ -14,9 +15,25 @@ export interface Users {
     progress ?: Function;
 }
 
-export default function(job: Users): Promise<any> {
-    return redis.scard(Keys.waitlist)
-        .then((waitlistLength) => {
+export default function(job: Users) {
+    let moniker: string;
+
+    User.fetchUser(job.data.user)
+        .then((user: IUser): Promise<any> => {
+            if (user === null) {
+                // User is not registered. Create a moniker, cache the moniker and put them online.
+                moniker = generateMoniker();
+                const addNewUser = User.create({userId: job.data.user, moniker: moniker});
+
+                return Promise.all([addNewUser, cacheMoniker(job.data.user, moniker)]);
+            }
+
+            // User is registered. Cache the moniker and put them online
+            moniker = user.get('moniker');
+            return cacheMoniker(job.data.user, moniker)
+        })
+        .then(() => redis.scard(Keys.waitlist))
+        .then((waitlistLength: Number) => {
             if(waitlistLength === 0) {
                 return addUserToWaitlist(job.data.user);
             } else {
@@ -26,7 +43,7 @@ export default function(job: Users): Promise<any> {
         .then(() => {
             return Promise.resolve();
         })
-        .catch(error => {
+        .catch((error: any) => {
             return Promise.reject(error)
         });
 }
@@ -78,4 +95,19 @@ function putUserOnline(user: string) {
         .then(() => console.log(`Successfully connnected ${userToPutOnline} and ${waitlistedUser}`))
         .catch((error: any) => Promise.reject(error))
 
+}
+
+/**
+ * Cache a user's moniker.
+ * N.B: This should ideally be in the redis util but,
+ * since we're trying to create as little connections as posible, we can't create a new Redis instance in utils/redis
+ * @param user 
+ * @param moniker 
+ */
+function cacheMoniker(user: string, moniker: string|null) {
+    if (moniker === null) {
+        moniker = generateMoniker();
+    }
+
+    return redis.hset(Keys.moniker, transformToKey(user), moniker);
 }
