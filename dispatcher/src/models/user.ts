@@ -6,7 +6,7 @@ export interface IUser extends UserDocument {
 }
 
 export interface UserModel extends Model<IUser> {
-    fetchUser(id: string): Promise<IUser|null>;
+    fetchById(id: string): Promise<IUser|null>;
 }
 
 const UserSchema: Schema = new Schema({
@@ -28,8 +28,8 @@ const UserSchema: Schema = new Schema({
     },
 });
 
-UserSchema.statics.fetchUser = function(id: string) {
-    return this.findOne({id: id});
+UserSchema.statics.fetchById = function(id: string) {
+    return this.findOne({userId: id});
 }
 
 export const User: UserModel = model<IUser, UserModel>('User', UserSchema);
