@@ -26,7 +26,7 @@ export async function queueInvalidCommand(sender: string) {
 
 export function putUserOnline(user: string) {
     onlineUsersQueue.add({user: user})
-        .then(result =>  console.log(`Successfully put user ${user} online.`))
+        .then(result =>  console.log(`Successfully scheduled user ${user} to be put online.`))
         .catch(error => console.log('Error occurred while adding job to online users queue', error.message));
 }
 

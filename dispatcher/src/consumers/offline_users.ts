@@ -9,16 +9,21 @@ const redis = new Redis(RedisConfig.redis.url);
 
 export default function(job: Users) {
     const user: string = transformToKey(job.data.user);
-    
-    return redis.hget(Keys.online, user)
-        .then(async (chatMate) => {
+    let userMoniker: string;
+
+    return redis.hget(Keys.moniker, user)
+        .then((moniker: string) => {
+            userMoniker = moniker;
+            return redis.hget(Keys.online, user)
+        })
+        .then(async (chatMate: string) => {
             if (chatMate !== null) {
                 const takeUsersOffline = redis.hdel(Keys.online, user, chatMate);
                 const addChatMateToWaitlist = redis.sadd(Keys.waitlist, chatMate);
 
                 // Inform chatmate user has gone offline and they're being reconnected
                 const chatMateID = transformKeyToID(chatMate);
-                const messageToSendChatmate = Messages.CHATMATE_OFFLINE.replace('${username}', job.data.user);
+                const messageToSendChatmate = Messages.CHATMATE_OFFLINE.replace('${username}', userMoniker);
                 const sendMessageToChatmate = sendMessage(buildMessageBody(messageToSendChatmate, chatMateID));
 
                 const sendMessageToUser = sendMessage(buildMessageBody(Messages.OFFLINE, job.data.user));

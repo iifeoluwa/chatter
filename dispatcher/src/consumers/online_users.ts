@@ -1,9 +1,8 @@
 import Redis from "ioredis";
-import { User, IUser } from "../models/user";
 import { Messages } from "../config/messages";
 import { RedisConfig, Keys } from "../config/index";
-import { buildMessageBody, sendMessage } from "../util/twitter"
-import { transformKeyToID, transformToKey, generateMoniker } from "../util/redis"
+import { buildMessageBody, sendMessage } from "../util/twitter";
+import { transformKeyToID, transformToKey, generateMoniker } from "../util/redis";
 
 const redis = new Redis(RedisConfig.redis.url);
 
@@ -15,35 +14,23 @@ export interface Users {
     progress ?: Function;
 }
 
-export default function(job: Users) {
-    let moniker: string;
+export default async function(job: Users) {
+    let moniker: string = generateMoniker();
 
-    User.fetchUser(job.data.user)
-        .then((user: IUser): Promise<any> => {
-            if (user === null) {
-                // User is not registered. Create a moniker, cache the moniker and put them online.
-                moniker = generateMoniker();
-                const addNewUser = User.create({userId: job.data.user, moniker: moniker});
-
-                return Promise.all([addNewUser, cacheMoniker(job.data.user, moniker)]);
-            }
-
-            // User is registered. Cache the moniker and put them online
-            moniker = user.get('moniker');
-            return cacheMoniker(job.data.user, moniker)
-        })
+    return cacheMoniker(job.data.user, moniker)
         .then(() => redis.scard(Keys.waitlist))
         .then((waitlistLength: Number) => {
             if(waitlistLength === 0) {
                 return addUserToWaitlist(job.data.user);
             } else {
-                return putUserOnline(job.data.user);
+                return putUserOnline(job.data.user, moniker);
             }
         })
         .then(() => {
             return Promise.resolve();
         })
         .catch((error: any) => {
+            console.log(error)
             return Promise.reject(error)
         });
 }
@@ -59,33 +46,39 @@ function addUserToWaitlist(user: string) {
             return Promise.resolve();
         })
         .catch((error: any) => {
+            console.log(error)
             return Promise.reject(error)
         })
 }
 
-function putUserOnline(user: string) {
+function putUserOnline(newUser: string, newUserMoniker: string) {
     // Fetch random user from waitlist.
     // Add two entries to online users hash.
-    const userToPutOnline = transformToKey(user);
-    let waitlistedUser: string;
+    const userToPutOnline = transformToKey(newUser);
+    let waitlistedUser: string, waitlistedUserMoniker: string;
 
     return redis.spop(Keys.waitlist)
         .then((randomWaitlistedUser: string) => {
+            // Fetch waitlisted user moniker
+            waitlistedUser = randomWaitlistedUser;
+            return redis.hget(Keys.moniker, randomWaitlistedUser);
+        })
+        .then((waitlistedUserNick) => {
+            waitlistedUserMoniker = waitlistedUserNick;
             const matchedUsersMap: any = {};
 
-            matchedUsersMap[`${userToPutOnline}`] = randomWaitlistedUser;
-            matchedUsersMap[`${randomWaitlistedUser}`] = userToPutOnline;
+            matchedUsersMap[`${userToPutOnline}`] = waitlistedUser;
+            matchedUsersMap[`${waitlistedUser}`] = userToPutOnline;
 
-            waitlistedUser = randomWaitlistedUser;
             return redis.hmset(Keys.online, matchedUsersMap);
         })
         .then(() => {
             // Send message to both users that they've been connected.
-            const newUserMessage = Messages.CONNECTED.replace('${username}', waitlistedUser);
-            const waitlistedUserMessage = Messages.CONNECTED.replace('${username}', userToPutOnline);
+            const newUserMessage = Messages.CONNECTED.replace('${username}', waitlistedUserMoniker);
+            const waitlistedUserMessage = Messages.CONNECTED.replace('${username}', newUserMoniker);
 
             const messageToSendWaitlistedUser = buildMessageBody(waitlistedUserMessage, transformKeyToID(waitlistedUser));
-            const messageToSendNewUser = buildMessageBody(newUserMessage, user);
+            const messageToSendNewUser = buildMessageBody(newUserMessage, newUser);
 
             const sendConnectionNotificationToWaitlistedUser = sendMessage(messageToSendWaitlistedUser);
             const sendConnectionNotificationToNewUser = sendMessage(messageToSendNewUser);
@@ -93,7 +86,10 @@ function putUserOnline(user: string) {
             return Promise.all([sendConnectionNotificationToNewUser, sendConnectionNotificationToWaitlistedUser]);
         })
         .then(() => console.log(`Successfully connnected ${userToPutOnline} and ${waitlistedUser}`))
-        .catch((error: any) => Promise.reject(error))
+        .catch((error: any) => {
+            console.log(error);
+            Promise.reject(error)
+        })
 
 }
 
@@ -104,10 +100,6 @@ function putUserOnline(user: string) {
  * @param user 
  * @param moniker 
  */
-function cacheMoniker(user: string, moniker: string|null) {
-    if (moniker === null) {
-        moniker = generateMoniker();
-    }
-
+function cacheMoniker(user: string, moniker: string) {
     return redis.hset(Keys.moniker, transformToKey(user), moniker);
 }
