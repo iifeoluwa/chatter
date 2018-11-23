@@ -14,14 +14,16 @@
   "author": "Ifeoluwa Arowosegbe",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.3",
     "bull": "3.4.8",
     "got": "8.3.2",
     "ioredis": "4.2.0",
     "mongoose": "5.3.12",
-    "moniker": "^0.1.2",
+    "moniker": "0.1.2",
     "oauth-1.0a": "2.2.4"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.24",
     "@types/bull": "3.4.0",
     "@types/got": "8.3.4",
     "@types/mocha": "5.2.5",

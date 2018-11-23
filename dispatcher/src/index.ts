@@ -1,7 +1,9 @@
 import Queue from "bull";
-import Redis from "ioredis";
-import { RedisConfig, QueueNames, Mongo } from "./config";
+import bluebird from "bluebird";
 import mongoose from "mongoose";
+import { RedisConfig, QueueNames, Mongo } from "./config";
+
+const Redis = require('ioredis');
 
 const INVALID_COMMANDS_PROCESSOR = `${__dirname}/consumers/invalid_comands.js`;
 const OFFLINE_USERS_PROCESSOR = `${__dirname}/consumers/offline_users.js`;
@@ -15,18 +17,20 @@ const MESSAGES_PROCESSOR = `${__dirname}/consumers/messaging.js`;
  * @return {Queue}
  */
 function createQueue(name: string) {
+    Redis.Promise = bluebird;
+
     const client = new Redis(RedisConfig.redis.url);
     const subscriber = new Redis(RedisConfig.redis.url);
 
     const opts: Queue.QueueOptions = {
         createClient: function(type) {
             switch(type){
-            case 'client':
-                return client;
-            case 'subscriber':
-                return subscriber;
-            default:
-                return new Redis(RedisConfig.redis.url);
+                case 'client':
+                    return client;
+                case 'subscriber':
+                    return subscriber;
+                default:
+                    return new Redis(RedisConfig.redis.url);
             }
         }
     };
@@ -43,7 +47,7 @@ const offlineConsumer = createQueue(QueueNames.offline);
 /**
  * Initiate connection to database
  */
-(<any>mongoose).Promise = Mongo.options.promiseLibrary;
+mongoose.Promise = Mongo.options.promiseLibrary;
 mongoose.connect(Mongo.uri, Mongo.options);
 
 const db = mongoose.connection
@@ -62,10 +66,12 @@ db.once('open', () => {
     /**
      * Start consumers
      */
-    console.log('Starting Consumers');
     invalidCommandsConsumer.process(INVALID_COMMANDS_PROCESSOR);
     onlineUsersConsumer.process(ONLINE_USERS_PROCESSOR);
     messagesConsumer.process(MESSAGES_PROCESSOR);
     offlineConsumer.process(OFFLINE_USERS_PROCESSOR);
+    console.log('Consumers started.');
 
 });
+
+console.log('Starting Consumers');

@@ -19,7 +19,7 @@ export const Mongo = {
         autoReconnect: true,
         reconnectTries: 10,
         reconnectInterval: 2000,
-        autoIndex: false,
+        autoIndex: true,
         useNewUrlParser: true,
     }
 }
